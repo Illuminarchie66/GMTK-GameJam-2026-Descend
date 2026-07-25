@@ -110,7 +110,7 @@ export default class PlayerRenderer {
                 vy: Math.sin(angle) * speed,
                 size: 2 + Math.random() * 3,
                 color: getRandomElement(this.deathPalette),
-                life: 1
+                life: 0.5
             })
         }
     }

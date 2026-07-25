@@ -271,6 +271,7 @@ export default class Player implements Transform {
 
 
     draw(ctx: CanvasRenderingContext2D): void {
+        console.log
 
         if(!this.spawned) {
             this.renderer.drawSpawn(ctx, this);
@@ -278,28 +279,12 @@ export default class Player implements Transform {
         }
 
         if(!this.alive) {
+            console.log("Drawing death");
             this.renderer.drawDeath(ctx, this);
             return;
         }
 
-        // sprites.playerRight2.draw(
-        //     ctx,
-        //     this.x - this.hitboxWidth/2,
-        //     this.y - this.hitboxHeight/2,
-        //     this.hitboxWidth,
-        //     this.hitboxHeight
-        // );
-
         this.renderer.draw(ctx, this);
-
-        // ctx.fillStyle = "#FF0000";
-
-        // ctx.fillRect(
-        //     this.x - this.hitboxWidth/2,
-        //     this.y - this.hitboxHeight/2,
-        //     this.hitboxWidth,
-        //     this.hitboxHeight
-        // );
 
     }
 
