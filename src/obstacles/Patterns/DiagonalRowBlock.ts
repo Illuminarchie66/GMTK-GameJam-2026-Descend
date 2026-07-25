@@ -1,0 +1,118 @@
+import { Row, GapRow } from "../Row.js";
+import RowBlock from "../RowBlock.js";
+import { resolve, getRandomInt } from "../../utils/utils.js";
+
+interface DiagonalPathOptions {
+    numRows?: number;
+    numRowsMin?: number;
+    numRowsMax?: number;
+    gapWidth?: number;
+    gapWidthMin?: number;
+    gapWidthMax?: number;
+    pathStart?: number;
+    pathEnd?: number;
+}
+
+export function buildDiagonalRows(options: DiagonalPathOptions = {}): {rows: Row[]; endGapStart: number} {
+    const {
+        numRows, numRowsMin = 5, numRowsMax = 10,
+        gapWidth, gapWidthMin = 2, gapWidthMax = 3,
+        pathStart, pathEnd
+    } = options;
+
+    const width = resolve(gapWidth, gapWidthMin, gapWidthMax);
+    const maxStart = Row.WIDTH - width;
+    const start = pathStart ?? getRandomInt(0, maxStart);
+    const end = pathEnd ?? getRandomInt(0, maxStart);
+    
+    const targetNumRows = resolve(numRows, numRowsMin, numRowsMax);
+
+    const maxStepPerRow = Math.max(1, width-1);
+    const delta = end - start;
+    const minRowsForSlope = Math.ceil(Math.abs(delta) / maxStepPerRow) + 1;
+    const rowCount = Math.max(targetNumRows, minRowsForSlope);
+
+    const rows: Row[] = [];
+    let lastGapStart = start;
+
+    for (let i=0; i < rowCount; i++) {
+        const t = rowCount === 1 ? 0 : i / (rowCount - 1);
+        lastGapStart = Math.round(start + delta * t);
+        rows.push(new GapRow({gapStart: lastGapStart, gapWidth: width}));
+    }
+
+    return {rows, endGapStart: lastGapStart};
+}
+
+export default class DiagonalRowBlock extends RowBlock {
+    constructor(options: DiagonalPathOptions = {}) {
+        super(buildDiagonalRows(options).rows);
+    }
+}
+
+// class DiagonalRowBlock2 extends RowBlock {
+//     rows: Row[] = [];
+
+//     constructor(numRows: number) {
+//         super(numRows);
+//         this.rows = this.generatePath();
+//     }
+
+//     generatePath(): Row[] {
+//         let pathStart;
+//         let pathEnd;
+//         if (Math.random() < 0.5) {
+//             pathStart = getRandomInt(0, (Row.WIDTH -1) / 2);
+//             pathEnd = getRandomInt((Row.WIDTH -1) / 2, Row.WIDTH - 1);
+//         } else {
+//             pathStart = getRandomInt((Row.WIDTH -1) / 2, Row.WIDTH - 1);
+//             pathEnd = getRandomInt(0, (Row.WIDTH -1) / 2);
+//         }
+        
+//         // we draw a line from start to end over num rows
+//         const grid = Array.from({length: this.numRows}, () => Array(Row.WIDTH).fill(false));
+//         // start is (0, pathStart), end is (numRows - 1, pathEnd)
+//         const dy = this.numRows - 1;
+//         const dx = pathEnd - pathStart;
+//         const steps = Math.max(Math.abs(dx), Math.abs(dy));
+//         if (steps === 0) {
+//             grid[0][pathStart] = true;
+//         }
+
+//         const y_inc = dy / steps;
+//         const x_inc = dx / steps;
+
+//         let y = 0;
+//         let x = pathStart;
+//         for (let i = 0; i <= steps; i++) {
+//             grid[Math.round(y)][Math.round(x)] = true;
+//             y += y_inc;
+//             x += x_inc;
+//         }
+
+//         const path: Row[] = [];
+//         for (let i = 0; i < this.numRows; i++) {
+//             const rowCells: Cell[] = [];
+//             for (let j = 0; j < Row.WIDTH; j++) {
+//                 if (grid[i][j]) {
+//                     rowCells.push(new EmptyCell(j));
+//                 } else {
+//                     rowCells.push(new SpikeCell(j));
+//                 }
+//             }
+//             path.push(new Row(rowCells));
+//         }
+//         return path;
+//     }
+
+//     nextRow(): Row | null {
+//         if (this.currentRow >= this.numRows) {
+//             return null;
+//         }
+
+//         const row = this.rows[this.currentRow];
+//         this.currentRow++;
+//         return row;
+
+//     }
+// }
