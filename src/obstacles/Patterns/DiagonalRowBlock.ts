@@ -1,23 +1,44 @@
-import { Row, GapRow } from "../Row.js";
+import { Row, EmptyRow, GapRow } from "../Row.js";
 import RowBlock from "../RowBlock.js";
 import { resolve, getRandomInt } from "../../utils/utils.js";
 
 interface DiagonalPathOptions {
-    numRows?: number;
-    numRowsMin?: number;
-    numRowsMax?: number;
+    numObstacleRows?: number;
+    numObstacleRowsMin?: number;
+    numObstacleRowsMax?: number;
+
+    spacing?: number;
+    spacingMin?: number;
+    spacingMax?: number;
+    leadIn?: number;
+    leadOut?: number;
+
     gapWidth?: number;
     gapWidthMin?: number;
     gapWidthMax?: number;
+
     pathStart?: number;
     pathEnd?: number;
 }
 
 export function buildDiagonalRows(options: DiagonalPathOptions = {}): {rows: Row[]; endGapStart: number} {
     const {
-        numRows, numRowsMin = 5, numRowsMax = 10,
-        gapWidth, gapWidthMin = 2, gapWidthMax = 3,
-        pathStart, pathEnd
+        numObstacleRows,
+        numObstacleRowsMin = 8,
+        numObstacleRowsMax = 14,
+
+        spacing,
+        spacingMin = 1,
+        spacingMax = 1,
+        leadIn = 2,
+        leadOut = 2,
+
+        gapWidth,
+        gapWidthMin = 2,
+        gapWidthMax = 4,
+
+        pathStart,
+        pathEnd
     } = options;
 
     const width = resolve(gapWidth, gapWidthMin, gapWidthMax);
@@ -25,20 +46,34 @@ export function buildDiagonalRows(options: DiagonalPathOptions = {}): {rows: Row
     const start = pathStart ?? getRandomInt(0, maxStart);
     const end = pathEnd ?? getRandomInt(0, maxStart);
     
-    const targetNumRows = resolve(numRows, numRowsMin, numRowsMax);
+    const targetCount = resolve(numObstacleRows, numObstacleRowsMin, numObstacleRowsMax);
 
     const maxStepPerRow = Math.max(1, width-1);
     const delta = end - start;
-    const minRowsForSlope = Math.ceil(Math.abs(delta) / maxStepPerRow) + 1;
-    const rowCount = Math.max(targetNumRows, minRowsForSlope);
+    const minRowsForSlope = Math.ceil(Math.abs(delta) / maxStepPerRow) + 3;
+    const count = Math.max(targetCount, minRowsForSlope);
 
     const rows: Row[] = [];
     let lastGapStart = start;
 
-    for (let i=0; i < rowCount; i++) {
-        const t = rowCount === 1 ? 0 : i / (rowCount - 1);
+    for (let i = 0; i < leadIn; i++) {
+        rows.push(new EmptyRow())
+    }
+
+    for (let i=0; i < count; i++) {
+        const t = count === 1 ? 0 : i / (count - 1);
         lastGapStart = Math.round(start + delta * t);
         rows.push(new GapRow({gapStart: lastGapStart, gapWidth: width}));
+        if (i < count - 1) {
+            const space = resolve(spacing, spacingMin, spacingMax);
+            for (let j=0; j < space; j++) {
+                rows.push(new EmptyRow());
+            }
+        }
+    }
+
+    for (let i = 0; i < leadOut; i++) {
+        rows.push(new EmptyRow());
     }
 
     return {rows, endGapStart: lastGapStart};

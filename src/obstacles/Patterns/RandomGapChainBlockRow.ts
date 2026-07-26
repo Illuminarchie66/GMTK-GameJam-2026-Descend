@@ -1,66 +1,110 @@
+import { BoosterCell } from "../Cell.js";
 import { Row, EmptyRow, GapRow } from "../Row.js";
 import RowBlock from "../RowBlock.js";
 import { resolve, getRandomInt, getWeightedChoice } from "../../utils/utils.js";
 
 interface RandomGapChainRowBlockOptions {
-    numRows?: number;
-    numRowsMin?: number;
-    numRowsMax?: number;
+
+    numObstacleRows?: number;
+    numObstacleRowsMin?: number;
+    numObstacleRowsMax?: number;
+
+    spacing?: number;
+    spacingMin?: number;
+    spacingMax?: number;
+    leadIn?: number;
+    leadOut?: number;
+
     gapWidth?: number;
     gapWidthMin?: number;
     gapWidthMax?: number;
-    rowGap?: number;
-    rowGapMin?: number;
-    rowGapMax?: number;
+
     downWeight?: number;
     turnWeight?: number;
     momentumBonus?: number;
+
+    booster?: boolean;
+    boosterMod?: number;
 }
 
 export default class RandomGapChainRowBlock extends RowBlock {
     constructor(options: RandomGapChainRowBlockOptions = {}) {
         const {
-            numRows, numRowsMin = 8, numRowsMax = 15, 
-            gapWidth, gapWidthMin = 2, gapWidthMax = 3, 
-            rowGap, rowGapMin = 1, rowGapMax = 2, 
-            downWeight = 1, turnWeight = 3, momentumBonus = 4 
+            numObstacleRows,
+            numObstacleRowsMin = 8,
+            numObstacleRowsMax = 15,
+
+            spacing,
+            spacingMin = 1,
+            spacingMax = 1,
+
+            leadIn = 0,
+            leadOut = 0,
+
+            gapWidth,
+            gapWidthMin = 2,
+            gapWidthMax = 3,
+
+            downWeight = 1,
+            turnWeight = 3,
+            momentumBonus = 4,
+
+            booster = false,
+            boosterMod = 6
+
         } = options;
 
+        const count = resolve(numObstacleRows, numObstacleRowsMin, numObstacleRowsMax)
         const width = resolve(gapWidth, gapWidthMin, gapWidthMax);
-        const turns = resolve(numRows, numRowsMin, numRowsMax);
+        
+        const rows: Row[] = [];
+
+        for (let i = 0; i < leadIn; i++) {
+            rows.push(new EmptyRow())
+        }
 
         let start = getRandomInt(0, Row.WIDTH - width);
         let lastDirection: "down" | "left" | "right" = "down";
+        const space = resolve(spacing, spacingMin, spacingMax);
 
-        const rows: Row[] = [
-            new GapRow({gapStart: start, gapWidth: width})
-        ]
+        for (let i = 0; i < count; i++) {
+            const row = new GapRow({gapStart: start, gapWidth: width})
 
-        for (let i=0; i < turns; i++) {
-            const spacing = resolve(rowGap, rowGapMin, rowGapMax);
-            for (let j=0; j < spacing; j++) {
-                rows.push(new EmptyRow());
+            if (i%boosterMod === 0 && booster) {
+                const boosterColumn = start + width * 0.5 - 0.5;
+                row.betweens.push(new BoosterCell({ column: boosterColumn }));
             }
 
-            // we determine weights by momentum, where it should be more likely to turn (as by turnWeight) and more likely to go the same as the last direction
-            const weights: Record<string, number> = { down: downWeight };
-            if (start + width < Row.WIDTH) {
-                weights.right = turnWeight + (lastDirection === "right" ? momentumBonus : 0);
-            }
-            if (start > 0) {
-                weights.left = turnWeight + (lastDirection === "left" ? momentumBonus : 0);
-            }
+            rows.push(row);
+            
+            if (i < count - 1) {
+                for (let j = 0; j < space; j++) {
+                    rows.push(new EmptyRow());
+                }
+                
+                const weights: Record<string, number> = { down: downWeight };
+                if (start + width < Row.WIDTH) {
+                    weights.right = turnWeight + (lastDirection === "right" ? momentumBonus : 0);
+                }
+                if (start > 0) {
+                    weights.left = turnWeight + (lastDirection === "left" ? momentumBonus : 0);
+                }
 
-            const dir = getWeightedChoice(weights) as "down" | "left" | "right";
-            if (dir === "down")
-                start = start;
-            if (dir === "right")
-                start = start + 1;
-            if (dir === "left")
-                start = start - 1;
+                const dir = getWeightedChoice(weights) as "down" | "left" | "right";
+                if (dir === "down")
+                    start = start;
+                if (dir === "right")
+                    start = start + 1;
+                if (dir === "left")
+                    start = start - 1;
+                
+                lastDirection = dir;
+            }
+        
+        }
 
-            lastDirection = dir;
-            rows.push(new GapRow({gapStart: start, gapWidth: width}));
+        for (let i=0; i<leadOut; i++) {
+            rows.push(new EmptyRow())
         }
 
         super(rows);

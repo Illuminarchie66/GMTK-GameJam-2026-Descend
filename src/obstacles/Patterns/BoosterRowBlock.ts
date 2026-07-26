@@ -1,9 +1,9 @@
 import { BoosterCell } from "../Cell.js";
 import { Row, EmptyRow, GapRow } from "../Row.js";
 import RowBlock from "../RowBlock.js";
-import { resolve, getRandomInt } from "../../utils/utils.js";
+import { resolve, getRandomInt, getRandomElement } from "../../utils/utils.js";
 
-interface RandomGapRowBlockOptions {
+interface BoosterRowBlockOptions {
     numObstacleRows?: number;
     numObstacleRowsMin?: number;
     numObstacleRowsMax?: number;
@@ -14,33 +14,23 @@ interface RandomGapRowBlockOptions {
     leadIn?: number;
     leadOut?: number;
 
-    gapWidth?: number;
-    gapWidthMin?: number;
-    gapWidthMax?: number;
-
-    booster?: boolean;
-    boosterChance?: number;
+    possiblePos?: number[];
 }
 
-export default class RandomGapRowBlock extends RowBlock {
-    constructor(options: RandomGapRowBlockOptions = {}) {
+export default class BoosterRowBlock extends RowBlock {
+    constructor(options: BoosterRowBlockOptions = {}) {
         const {
             numObstacleRows,
             numObstacleRowsMin = 1,
             numObstacleRowsMax = 1,
 
             spacing,
-            spacingMin = 1,
-            spacingMax = 1,
+            spacingMin = 6,
+            spacingMax = 12,
             leadIn = 2,
             leadOut = 2,
 
-            gapWidth,
-            gapWidthMin = 2,
-            gapWidthMax = 4,
-
-            booster = false,
-            boosterChance = 0.5
+            possiblePos = [2.25, 4.5, 6.75]
 
         } = options;
         const count = resolve(numObstacleRows, numObstacleRowsMin, numObstacleRowsMax);
@@ -52,14 +42,9 @@ export default class RandomGapRowBlock extends RowBlock {
         }
 
         for (let i=0; i< count; i++) {
-            const width = resolve(gapWidth, gapWidthMin, gapWidthMax);
 
-            const idx = getRandomInt(0, Row.WIDTH - width - 1);
-            const row = new GapRow({ gapStart: idx, gapWidth: width });
-            if (booster && Math.random() < boosterChance) {
-                const boosterColumn = idx + width * 0.5 - 0.5;
-                row.betweens.push(new BoosterCell({ column: boosterColumn }));
-            }
+            const row = new EmptyRow();
+            row.betweens.push(new BoosterCell({column: getRandomElement(possiblePos)}));
             rows.push(row);
 
             if (i < count - 1) {

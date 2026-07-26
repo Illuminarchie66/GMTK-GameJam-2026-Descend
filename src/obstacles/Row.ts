@@ -50,12 +50,22 @@ export class EmptyRow extends Row {
 export class RandomRow extends Row {
 
     constructor(chance: number = 0.5) {
+        let allSpikes = true;
         const cells: Cell[] = Array.from(
             { length: Row.WIDTH }, (_, i) => {
                 const cellType = Math.random() > chance ? SpikeCell : EmptyCell;
+                if (cellType instanceof EmptyCell) {
+                    allSpikes = false;
+                }
                 return new cellType(i);
             }
         );
+
+        if (allSpikes) {
+            const idx = getRandomInt(0, cells.length-1);
+            cells[idx] = new EmptyCell(idx) 
+        }
+
         super(cells);
     }
 }

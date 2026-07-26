@@ -10,25 +10,44 @@ interface BittyRowBlockOptions {
     patternLength?: number;
     patternLengthMin?: number;
     patternLengthMax?: number;
+
+    numObstacleRows?: number;
+    numObstacleRowsMin?: number;
+    numObstacleRowsMax?: number;
+
     spacing?: number;
     spacingMin?: number;
     spacingMax?: number;
+    leadIn?: number;
+    leadOut?: number;
 }
 
 export default class BittyRowBlock extends RowBlock {
     constructor(options: BittyRowBlockOptions = {}) {
         const {
-            patternCount, patternCountMin = 2, patternCountMax = 6,
-            patternLength, patternLengthMin = 1, patternLengthMax = 1,
-            spacing, spacingMin = 2, spacingMax = 3
+            numObstacleRows,
+            numObstacleRowsMin = 1,
+            numObstacleRowsMax = 1,
+
+            spacing,
+            spacingMin = 1,
+            spacingMax = 1,
+            leadIn = 2,
+            leadOut = 2,
         } = options;
 
-        const count = resolve(patternCount, patternCountMin, patternCountMax);
+        const count = resolve(numObstacleRows, numObstacleRowsMin, numObstacleRowsMax);
+        
         const rows: Row[] = [];
         let flip = getRandomInt(0, 1);
 
-        for (let p = 0; p < count; p++) {
-            const length = resolve(patternLength, patternLengthMin, patternLengthMax);
+        for (let i = 0; i < leadIn; i++) {
+            rows.push(new EmptyRow())
+        }
+
+        const space = resolve(spacing, spacingMin, spacingMax);
+
+        for (let i = 0; i < count; i++) {
             const cells: Cell[] = [];
             for (let i=0; i< Row.WIDTH; i++) {
                 cells.push((i%2) === flip ? new EmptyCell(i) : new SpikeCell(i));
@@ -36,11 +55,16 @@ export default class BittyRowBlock extends RowBlock {
             rows.push(new Row(cells));
             flip = 1 - flip;
 
-            const gap = resolve(spacing, spacingMin, spacingMax);
-            
-            for (let g=0; g<gap; g++) {
-                rows.push(new EmptyRow());
+            if (i < count - 1) {
+                for (let j=0; j<space; j++) {
+                    rows.push(new EmptyRow());
+                }
             }
+
+        }
+
+        for (let i = 0; i < leadOut; i++) {
+            rows.push(new EmptyRow())
         }
 
         super(rows);

@@ -14,7 +14,10 @@ import MovingSpikeBallRowBlock from "../obstacles/Patterns/MovingSpikeBallRowBlo
 import MovingSpikeBallGapRowBlock from "../obstacles/Patterns/MovingSpikeBallGapRowBlock.js";
 import SpinningSpikeBallRowBlock from "../obstacles/Patterns/SpinningSpikeBallRowBlock.js";
 import AlternatingSpinningSpikeBallRowBlock from "../obstacles/Patterns/AlternatingSpinningSpikeBallRowBlock.js";
+import BoosterRowBlock from "../obstacles/Patterns/BoosterRowBlock.js";
+import BoosterChainRowBlock from "../obstacles/Patterns/BoosterChainRowBlock.js"
 import TestRowBlock from "../obstacles/Patterns/TestRowBlock.js";
+import { getRandomInt } from "../utils/utils.js";
 
 import World from "../World.js";
 
@@ -49,10 +52,21 @@ class RowGenerator {
 
         if (this.alternate) {
             this.alternate = false;
-            return new EmptyRowBlock({ numRowsMin: 4, numRowsMax: 6 });
+            return new EmptyRowBlock({ numRowsMin: 5, numRowsMax: 7 });
         } else {
-            this.alternate = true;
-            return new RandomGapRowBlock();
+            this.alternate = true
+            return new BittyRowBlock( { 
+                numObstacleRowsMin: 2,
+                numObstacleRowsMax: 5,
+
+                spacingMin: 1,
+                spacingMax: 3,
+                leadIn: 2,
+                leadOut: 2,
+
+            } )
+            //return new ZigzagRowBlock({spacing: 0, gapWidthMin: 3});
+            //return new RandomGapRowBlock({booster: true, boosterChance: 0.5});
         }
     }
 }

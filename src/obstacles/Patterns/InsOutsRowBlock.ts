@@ -4,40 +4,68 @@ import { resolve, getRandomInt } from "../../utils/utils.js";
 
 
 interface InsOutsRowBlockOptions {
-    transitions?: number;
-    transitionsMin?: number;
-    transitionsMax?: number;
+    numObstacleRows?: number;
+    numObstacleRowsMin?: number;
+    numObstacleRowsMax?: number;
+
+    spacing?: number;
+    spacingMin?: number;
+    spacingMax?: number;
+    leadIn?: number;
+    leadOut?: number;
+
+    gapStart?: number;
     gapWidth?: number;
     gapWidthMin?: number;
     gapWidthMax?: number;
-    gapStart?: number;
-    spacingMin?: number;
-    spacingMax?: number;
 }
 
 export default class InsOutsRowBlock extends RowBlock {
     constructor(options: InsOutsRowBlockOptions = {}) {
         const { 
-            transitions, transitionsMin = 2, transitionsMax = 4, 
-            gapWidth, gapWidthMin = 3, gapWidthMax = 5, gapStart, 
-            spacingMin = 2, spacingMax = 3 
+            numObstacleRows,
+            numObstacleRowsMin = 1,
+            numObstacleRowsMax = 1,
+
+            spacing,
+            spacingMin = 1,
+            spacingMax = 1,
+            leadIn = 2,
+            leadOut = 2,
+
+            gapStart,
+            gapWidth,
+            gapWidthMin = 2,
+            gapWidthMax = 4,
+
         } = options;
-        
+        const count = resolve(numObstacleRows, numObstacleRowsMin, numObstacleRowsMax);
         const width = resolve(gapWidth, gapWidthMin, gapWidthMax);
-        const start = gapStart ?? getRandomInt(0, Row.WIDTH - width);
-        const count = resolve(transitions, transitionsMin, transitionsMax);
-        const rows: Row[] = [
-            new GapRow({gapStart: start, gapWidth: width})
-        ];
 
-        for (let i = 0; i < count; i++) {
-            const spacing = getRandomInt(spacingMin, spacingMax);
-            for (let j = 0; j < spacing; j++) {
-                rows.push(new EmptyRow());
-            }
+        const rows: Row[] = [];
 
-            const RowType = i% 2 === 0 ? GapRow : InverseGapRow;
+        for (let i = 0; i < leadIn; i++) {
+            rows.push(new EmptyRow())
+        }
+
+        let flip = getRandomInt(0, 1);
+
+        for (let i=0; i<count; i++) {
+            const start = resolve(gapStart, 0, Row.WIDTH - width - 1);
+            const RowType = flip === 0 ? GapRow : InverseGapRow;
             rows.push(new RowType({gapStart: start, gapWidth: width}));
+            flip = 1 - flip;
+
+            if (i < count - 1) {
+                const space = resolve(spacing, spacingMin, spacingMax);
+                for (let j=0; j<space; j++) {
+                    rows.push(new EmptyRow())
+                }
+            }
+        }
+
+        for (let i = 0; i < leadOut; i++) {
+            rows.push(new EmptyRow())
         }
 
         super(rows);

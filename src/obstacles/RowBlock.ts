@@ -1,5 +1,12 @@
 import { Row } from "./Row.js";
 
+interface RowBlockOptions {
+    numObstacleRows?: number;
+    spacing?: number;
+    leadIn?: number;
+    leadOut?: number;
+}
+
 export default abstract class RowBlock {
     protected rows: Row[]
     private index: number = 0;
