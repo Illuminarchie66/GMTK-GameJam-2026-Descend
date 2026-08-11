@@ -1,24 +1,28 @@
 import Game from "./Game.js";
 import Assets from "./rendering/Assets.js";
 
-function resize(){
+const UI_WIDTH = 150;
 
-    const aspect = 1/2;
+let game: Game;
 
-    let width = window.innerWidth;
-    let height = window.innerHeight;
+function resize() {
 
-    if(width/height > aspect){
-        width = height * aspect;
+    const aspect = 1 / 2;
+
+    let gameplayWidth = window.innerWidth - UI_WIDTH;
+    let gameplayHeight = window.innerHeight;
+
+    if (gameplayWidth / gameplayHeight > aspect) {
+        gameplayWidth = gameplayHeight * aspect;
+    } else {
+        gameplayHeight = gameplayWidth / aspect;
     }
-    else{
-        height = width / aspect;
-    }
 
-    canvas.width = width;
-    canvas.height = height;
+    canvas.width = gameplayWidth + UI_WIDTH;
+    canvas.height = gameplayHeight;
+    if (game)
+        game.resize();
 }
-
 
 const canvas = document.getElementById("gameCanvas")! as HTMLCanvasElement;
 
@@ -27,5 +31,5 @@ window.addEventListener("resize", resize);
 
 await Assets.load();
 
-const game = new Game(canvas);
+game = new Game(canvas);
 game.start();

@@ -25,6 +25,8 @@ interface RandomGapChainRowBlockOptions {
 
     booster?: boolean;
     boosterMod?: number;
+    boosterImpulse?: number;
+    boosterMultiplier?: number;
 }
 
 export default class RandomGapChainRowBlock extends RowBlock {
@@ -50,7 +52,9 @@ export default class RandomGapChainRowBlock extends RowBlock {
             momentumBonus = 4,
 
             booster = false,
-            boosterMod = 6
+            boosterMod = 6,
+            boosterImpulse = 450,
+            boosterMultiplier = 1.5
 
         } = options;
 
@@ -72,7 +76,7 @@ export default class RandomGapChainRowBlock extends RowBlock {
 
             if (i%boosterMod === 0 && booster) {
                 const boosterColumn = start + width * 0.5 - 0.5;
-                row.betweens.push(new BoosterCell({ column: boosterColumn }));
+                row.betweens.push(new BoosterCell({ column: boosterColumn, impulse: boosterImpulse, multiplier: boosterMultiplier }));
             }
 
             rows.push(row);

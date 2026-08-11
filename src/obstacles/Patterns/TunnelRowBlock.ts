@@ -18,13 +18,17 @@ interface TunnelRowBlockOptions {
     leadIn?: number;
     leadOut?: number;
 
+    startIdx?: number;
     gapWidth?: number;
     gapWidthMin?: number;
     gapWidthMax?: number;
 
     boosterStart?: boolean;
     boosterEnd?: boolean;
+    boosterRepeat?: boolean;
     boosterMod?: number;
+    boosterImpulse?: number;
+    boosterMultiplier?: number;
 }
 
 export default class TunnelRowBlock extends RowBlock {
@@ -45,13 +49,17 @@ export default class TunnelRowBlock extends RowBlock {
             leadIn = 0,
             leadOut = 0,
 
+            startIdx,
             gapWidth,
             gapWidthMin = 1,
             gapWidthMax = 3,
             
             boosterStart = false,
             boosterEnd = false,
-            boosterMod = 5
+            boosterRepeat = false,
+            boosterMod = 5,
+            boosterImpulse = 450,
+            boosterMultiplier = 1.5
 
         } = options;
 
@@ -66,13 +74,18 @@ export default class TunnelRowBlock extends RowBlock {
         for (let t=0; t<tunnels; t++) {
             const count = resolve(numObstacleRows, numObstacleRowsMin, numObstacleRowsMax)
             const width = resolve(gapWidth, gapWidthMin, gapWidthMax);
-            const start = getRandomInt(0, Row.WIDTH - width - 1);
+            const start = resolve(startIdx, 0, Row.WIDTH - width);
             for (let i = 0; i < count; i++) {
                 const row = new GapRow({gapStart:start, gapWidth:width})
 
+                if (boosterRepeat && i % boosterMod === 0) {
+                    const boosterColumn = start + width * 0.5 - 0.5;
+                    row.betweens.push(new BoosterCell({ column: boosterColumn, impulse: boosterImpulse, multiplier: boosterMultiplier }));
+                }
+
                 if ((boosterStart && i === 0) || (boosterEnd && i === count-1)) {
                     const boosterColumn = start + width * 0.5 - 0.5;
-                    row.betweens.push(new BoosterCell({ column: boosterColumn }));
+                    row.betweens.push(new BoosterCell({ column: boosterColumn, impulse: boosterImpulse, multiplier: boosterMultiplier }));
                 }
 
                 rows.push(row)

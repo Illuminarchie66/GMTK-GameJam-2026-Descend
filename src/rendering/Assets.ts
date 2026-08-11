@@ -12,7 +12,7 @@ export default class Assets {
             ),
             this.loadImage(
                 this.dirtCave,
-                "assets/dirt_cave.png"
+                "assets/dirt_cave2.png"
             ),
             this.loadImage(
                 this.crystalCave,

@@ -170,6 +170,18 @@ new InsOutsRowBlock( {
                 gapWidth: 4,
 
             } )
+new DiagonalRowBlock( { 
+                numObstacleRowsMin: 8,
+                numObstacleRowsMax: 14,
+
+                spacing: 0,
+                leadIn: 2,
+                leadOut: 2,
+
+                gapWidthMin: 3,
+                gapWidthMax: 4,
+
+            } )
 
 # Medium:
 new RandomRowBlock( { 
@@ -350,6 +362,48 @@ new InsOutsRowBlock( {
                 gapWidthMax: 5
 
             } )
+new BittyRowBlock( { 
+                numObstacleRowsMin: 3,
+                numObstacleRowsMax: 5,
+
+                spacingMin: 2,
+                spacingMax: 2,
+                leadIn: 2,
+                leadOut: 2,
+
+            } )
+new DiagonalRowBlock( { 
+                numObstacleRowsMin: 12,
+                numObstacleRowsMax: 16,
+
+                spacing: 0,
+                leadIn: 2,
+                leadOut: 2,
+
+                gapWidthMin: 2,
+                gapWidthMax: 3
+
+            } )
+new ZigzagRowBlock( { 
+                segmentsMin: 3,
+                segmentsMax: 5,
+
+                numObstacleRowsPerSegmentMin: 8,
+                numObstacleRowsPerSegmentMax: 14,
+
+                spacing: 0,
+                leadIn: 2,
+                leadOut: 2,
+
+                gapWidthMin: 4,
+                gapWidthMax: 4,
+
+                swingMin: 4,
+                swingMax: Row.WIDTH - 1,
+
+                booster: true,
+                boosterMod: 15
+            } )
 
 
 # Hard:
@@ -410,21 +464,89 @@ new RandomGapChainRowBlock( {
                 turnWeight: 3,
                 momentumBonus: 5,
             } )
-            
+new BittyRowBlock( { 
+                numObstacleRowsMin: 2,
+                numObstacleRowsMax: 3,
+
+                spacingMin: 1,
+                spacingMax: 1,
+                leadIn: 2,
+                leadOut: 2,
+
+            } )
+new ZigzagRowBlock( { 
+                segmentsMin: 5,
+                segmentsMax: 7,
+
+                numObstacleRowsPerSegmentMin: 5,
+                numObstacleRowsPerSegmentMax: 10,
+
+                spacing: 0,
+                leadIn: 2,
+                leadOut: 2,
+
+                gapWidthMin: 3,
+                gapWidthMax: 3,
+
+                swingMin: 7,
+                swingMax: Row.WIDTH - 1,
+
+            } )
+new ZigzagRowBlock( { 
+                segmentsMin: 5,
+                segmentsMax: 7,
+
+                numObstacleRowsPerSegmentMin: 12,
+                numObstacleRowsPerSegmentMax: 16,
+
+                spacing: 0,
+                leadIn: 2,
+                leadOut: 2,
+
+                gapWidthMin: 4,
+                gapWidthMax: 4,
+
+                swingMin: 6,
+                swingMax: Row.WIDTH - 1,
+
+                booster: true,
+                boosterMod: 25,
+                boosterImpulse: 600,
+                boosterMultiplier: 1.6
+            } )
+new TunnelRowBlock( { 
+                numTunnelsMin:1,
+                numTunnelsMax:5,
+
+                numObstacleRowsMin: 21,
+                numObstacleRowsMax: 21,
+
+                spacingMin: 11,
+                spacingMax: 12,
+                leadIn: 0,
+                leadOut: 10,
+
+                gapWidthMin: 2,
+                gapWidthMax: 2,
+
+                boosterRepeat: true,
+                boosterMod: 5,
+                boosterImpulse: 950,
+                boosterMultiplier: 2
+            } )
 
 
 RandomRowBlock 
 RandomGapRowBlock 
 RandomGapChainRowBlock 
 TunnelRowBlock 
-
-
 InsOutsRowBlock 
 BittyRowBlock 
 DiagonalRowBlock 
 ZigzagRowBlock 
 MovingSpikeBallRowBlock 
 MovingSpikeBallGapRowBlock 
+
 BoosterRowBlock
 BoosterChainRowBlock
 

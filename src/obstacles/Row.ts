@@ -1,6 +1,8 @@
 import Entity from "./Entities/Entity.js";
 import { Cell, EmptyCell, SpikeCell, SpikeBallCell } from "./Cell.js";
+import Spike from "./Entities/Spike.js";
 import { getRandomInt } from "../utils/utils.js";
+import { sprites } from "../rendering/Sprite.js";
 
 export class Row {
     static ROW_HEIGHT = 50;
@@ -33,8 +35,40 @@ export class Row {
 
         this.cells.forEach((cell, i) => {
             const x = i * Row.CELL_SIZE;
-            entities.push(...cell.createEntities(this.y))
+            if (cell instanceof SpikeCell) {
+                const entity = new Spike(x, this.y, Row.CELL_SIZE, Row.ROW_HEIGHT);
+                
+                if (i === 0) {
+                    if (this.cells[i+1] instanceof SpikeCell) {
+                        entity.sprite = sprites.spikeMiddle;
+                    } else {
+                        entity.sprite = sprites.spikeRight;
+                    }
+                } else if (i === this.cells.length - 1) {
+                    if (this.cells[i-1] instanceof SpikeCell) {
+                        entity.sprite = sprites.spikeMiddle;
+                    } else {
+                        entity.sprite = sprites.spikeLeft;
+                    }
+                } else {
+                    if (this.cells[i-1] instanceof SpikeCell && this.cells[i+1] instanceof SpikeCell) {
+                        entity.sprite = sprites.spikeMiddle;
+                    } else if (this.cells[i-1] instanceof SpikeCell) {
+                        entity.sprite = sprites.spikeRight;
+                    } else if (this.cells[i+1] instanceof SpikeCell) {
+                        entity.sprite = sprites.spikeLeft;
+                    } else if (this.cells[i-1] instanceof EmptyCell && this.cells[i+1] instanceof EmptyCell) {
+                        entity.sprite = sprites.spikeLone;
+                    }
+                }
+
+                entities.push(entity);
+            } else {
+                entities.push(...cell.createEntities(this.y))
+            }
+            
         })
+
         return entities;
     }
 

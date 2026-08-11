@@ -69,9 +69,9 @@ export default class MovingSpikeBallGapRowBlock extends RowBlock {
             cells[spikeBallIdx] = new SpikeBallCell({
                 column: spikeBallIdx, 
                 speed: speed, 
-                direction: direction, 
-                leftEnd: leftIdx * Row.CELL_SIZE, 
-                rightEnd: rightIdx * Row.CELL_SIZE
+                direction: 1, 
+                leftEnd: leftIdx * Row.CELL_SIZE + Row.CELL_SIZE / 2, 
+                rightEnd: rightIdx * Row.CELL_SIZE - Row.CELL_SIZE / 2
             });
             
             rows.push(new Row(cells));

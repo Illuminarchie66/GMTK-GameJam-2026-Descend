@@ -1,6 +1,7 @@
 import { Row, EmptyRow, GapRow } from "../Row.js";
 import RowBlock from "../RowBlock.js";
 import { resolve, getRandomInt } from "../../utils/utils.js";
+import { BoosterCell } from "../Cell.js";
 
 interface DiagonalPathOptions {
     numObstacleRows?: number;
@@ -19,6 +20,11 @@ interface DiagonalPathOptions {
 
     pathStart?: number;
     pathEnd?: number;
+
+    booster?: boolean;
+    boosterMod?: number;
+    boosterImpulse?: number;
+    boosterMultiplier?: number;
 }
 
 export function buildDiagonalRows(options: DiagonalPathOptions = {}): {rows: Row[]; endGapStart: number} {
@@ -38,19 +44,32 @@ export function buildDiagonalRows(options: DiagonalPathOptions = {}): {rows: Row
         gapWidthMax = 4,
 
         pathStart,
-        pathEnd
+        pathEnd,
+
+        booster = false,
+        boosterMod = 6,
+        boosterImpulse = 450,
+        boosterMultiplier = 1.5
     } = options;
 
     const width = resolve(gapWidth, gapWidthMin, gapWidthMax);
     const maxStart = Row.WIDTH - width;
-    const start = pathStart ?? getRandomInt(0, maxStart);
-    const end = pathEnd ?? getRandomInt(0, maxStart);
+
+    let start;
+    let end;
+    if (Math.random() < 0.5) {
+        start = pathStart ?? getRandomInt(0, maxStart / 2 - 1);
+        end = pathEnd ?? getRandomInt(maxStart / 2 + 1, maxStart);
+    } else {
+        start = pathStart ?? getRandomInt(maxStart / 2 + 1, maxStart);
+        end = pathEnd ?? getRandomInt(0, maxStart / 2 - 1 );
+    }
     
     const targetCount = resolve(numObstacleRows, numObstacleRowsMin, numObstacleRowsMax);
 
     const maxStepPerRow = Math.max(1, width-1);
     const delta = end - start;
-    const minRowsForSlope = Math.ceil(Math.abs(delta) / maxStepPerRow) + 3;
+    const minRowsForSlope = Math.ceil(Math.abs(delta) / maxStepPerRow) + 4;
     const count = Math.max(targetCount, minRowsForSlope);
 
     const rows: Row[] = [];
@@ -63,7 +82,13 @@ export function buildDiagonalRows(options: DiagonalPathOptions = {}): {rows: Row
     for (let i=0; i < count; i++) {
         const t = count === 1 ? 0 : i / (count - 1);
         lastGapStart = Math.round(start + delta * t);
-        rows.push(new GapRow({gapStart: lastGapStart, gapWidth: width}));
+        const row = new GapRow({gapStart: lastGapStart, gapWidth: width});
+        if (booster && i % boosterMod === 0) {
+            const boosterColumn = lastGapStart + width * 0.5 - 0.5;
+            row.betweens.push(new BoosterCell({ column: boosterColumn, impulse: boosterImpulse, multiplier: boosterMultiplier }));
+        }
+
+        rows.push(row);
         if (i < count - 1) {
             const space = resolve(spacing, spacingMin, spacingMax);
             for (let j=0; j < space; j++) {

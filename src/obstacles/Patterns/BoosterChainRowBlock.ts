@@ -3,7 +3,7 @@ import { Row, EmptyRow, GapRow } from "../Row.js";
 import RowBlock from "../RowBlock.js";
 import { resolve, getRandomInt, getRandomElement, clamp } from "../../utils/utils.js";
 
-interface BoosterRowBlockOptions {
+interface BoosterChainRowBlockOptions {
     numObstacleRows?: number;
     numObstacleRowsMin?: number;
     numObstacleRowsMax?: number;
@@ -21,7 +21,7 @@ interface BoosterRowBlockOptions {
 }
 
 export default class BoosterChainRowBlock extends RowBlock {
-    constructor(options: BoosterRowBlockOptions = {}) {
+    constructor(options: BoosterChainRowBlockOptions = {}) {
         const {
             numObstacleRows,
             numObstacleRowsMin = 1,

@@ -20,6 +20,8 @@ interface RandomGapRowBlockOptions {
 
     booster?: boolean;
     boosterChance?: number;
+    boosterImpulse?: number;
+    boosterMultiplier?: number;
 }
 
 export default class RandomGapRowBlock extends RowBlock {
@@ -40,7 +42,10 @@ export default class RandomGapRowBlock extends RowBlock {
             gapWidthMax = 4,
 
             booster = false,
-            boosterChance = 0.5
+            boosterChance = 0.5,
+            boosterImpulse = 450,
+            boosterMultiplier = 1.5
+            
 
         } = options;
         const count = resolve(numObstacleRows, numObstacleRowsMin, numObstacleRowsMax);
@@ -58,7 +63,7 @@ export default class RandomGapRowBlock extends RowBlock {
             const row = new GapRow({ gapStart: idx, gapWidth: width });
             if (booster && Math.random() < boosterChance) {
                 const boosterColumn = idx + width * 0.5 - 0.5;
-                row.betweens.push(new BoosterCell({ column: boosterColumn }));
+                row.betweens.push(new BoosterCell({ column: boosterColumn, impulse: boosterImpulse, multiplier: boosterMultiplier }));
             }
             rows.push(row);
 

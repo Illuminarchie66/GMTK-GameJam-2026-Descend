@@ -1,6 +1,6 @@
 import { Row } from "./Row.js";
 
-interface RowBlockOptions {
+export interface RowBlockOptions {
     numObstacleRows?: number;
     spacing?: number;
     leadIn?: number;

@@ -4,39 +4,66 @@ import RowBlock from "../RowBlock.js";
 import { resolve, resolveFloat, getRandomInt } from "../../utils/utils.js";
 
 interface SpinningSpikeBallRowBlockOptions {
-    numBallRows?: number;
-    numBallRowsMin?: number;
-    numBallRowsMax?: number;
-    spikeballSpeed?: number;
-    spikeballSpeedMin?: number;
-    spikeballSpeedMax?: number;
-    spikeballRadius?: number;
-    spikeballRadiusMin?: number;
-    spikeballRadiusMax?: number;
+    numObstacleRows?: number;
+    numObstacleRowsMin?: number;
+    numObstacleRowsMax?: number;
+
     spacing?: number;
     spacingMin?: number;
     spacingMax?: number;
+    leadIn?: number;
+    leadOut?: number;
+
+    spikeballIndex?: number;
+    spikeballDirection?: number;
+    spikeballSpeed?: number;
+    spikeballSpeedMin?: number;
+    spikeballSpeedMax?: number;
+
+    spikeballRadius?: number;
+    spikeballRadiusMin?: number;
+    spikeballRadiusMax?: number;
 }
 
 export default class SpinningSpikeBallRowBlock extends RowBlock {
     constructor(options: SpinningSpikeBallRowBlockOptions = {}) {
         const {
-            numBallRows, numBallRowsMin = 2, numBallRowsMax = 7, 
-            spikeballSpeed, spikeballSpeedMin = Math.PI/2, spikeballSpeedMax = Math.PI,
-            spikeballRadius, spikeballRadiusMin = Row.CELL_SIZE * 1.5, spikeballRadiusMax = Row.CELL_SIZE * 3.5,
-            spacing, spacingMin = 1, spacingMax = 2
+            numObstacleRows,
+            numObstacleRowsMin = 1,
+            numObstacleRowsMax = 1,
+
+            spacing,
+            spacingMin = 1,
+            spacingMax = 1,
+            leadIn = 2,
+            leadOut = 2,
+
+            spikeballIndex,
+            spikeballDirection,
+            spikeballSpeed,
+            spikeballSpeedMin = 100,
+            spikeballSpeedMax = 300,
+
+            spikeballRadius,
+            spikeballRadiusMin = Row.CELL_SIZE * 2,
+            spikeballRadiusMax = Row.CELL_SIZE * 4
         } = options;
 
-        const count = resolve(numBallRows, numBallRowsMin, numBallRowsMax);
+        const count = resolve(numObstacleRows, numObstacleRowsMin, numObstacleRowsMax);
 
         const rows: Row[] = [];
+
+        for (let i = 0; i < leadIn; i++) {
+            rows.push(new EmptyRow())
+        }
+
         for (let i=0; i<count; i++) {
-            const idx = getRandomInt(0, Row.WIDTH - 1);
+            const idx = resolve(spikeballIndex, 0, Row.WIDTH - 1);
             const cells: Cell[] = Array.from({length: Row.WIDTH}, (_, i) => {
                 if (i === idx) {
                     const speed = resolve(spikeballSpeed, spikeballSpeedMin, spikeballSpeedMax);
                     const radius = resolveFloat(spikeballRadius, spikeballRadiusMin, spikeballRadiusMax);
-                    const direction = getRandomInt(0, 1) === 0 ? -1 : 1;
+                    const direction = spikeballDirection ?? (getRandomInt(0, 1) === 0 ? -1 : 1);
                     return new SpinningSpikeBallCell({
                         column: i, 
                         speed: speed, 
@@ -49,10 +76,14 @@ export default class SpinningSpikeBallRowBlock extends RowBlock {
             });
             rows.push(new Row(cells));
 
-            const gap = resolve(spacing, spacingMin, spacingMax);
-            for (let i=0; i<gap; i++) {
+            const space = resolve(spacing, spacingMin, spacingMax);
+            for (let i=0; i<space; i++) {
                 rows.push(new EmptyRow());
             }
+        }
+
+        for (let i = 0; i < leadOut; i++) {
+            rows.push(new EmptyRow())
         }
 
         super(rows);

@@ -76,6 +76,8 @@ export default class Player implements Transform {
 
     spawnDepth: number = 160;
 
+    noKill: boolean = true;
+
     constructor({ inputs, x }: PlayerOptions) {
         this.inputs = inputs;
         this.x = x;
@@ -112,6 +114,7 @@ export default class Player implements Transform {
     }
 
     kill() {
+        if (this.noKill) return;
         this.startDeath();
     }
 
@@ -221,7 +224,7 @@ export default class Player implements Transform {
 
         this.dy = targetDy * this.speedMultiplier + this.boostImpulse;
 
-        this.x += this.dx * dt * this.speedMultiplier;
+        this.x += this.dx * dt * Math.pow(this.speedMultiplier, 1.2);
         this.x = clamp(this.x, this.colliderWidth/2, World.GAMEPLAY_WIDTH - this.colliderWidth/2);
         this.y += this.dy * dt;
 
@@ -279,7 +282,6 @@ export default class Player implements Transform {
         }
 
         if(!this.alive) {
-            console.log("Drawing death");
             this.renderer.drawDeath(ctx, this);
             return;
         }

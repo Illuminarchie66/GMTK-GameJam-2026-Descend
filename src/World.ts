@@ -43,7 +43,7 @@ export default class World {
         this.inputs = inputs;
         this.gameDetails = gameDetails;
 
-        this.rows = new RowManager();
+        this.rows = new RowManager(this.gameDetails);
 
         for (const row of this.rows.rows) {
             this.entities.push(...row.entities);
@@ -53,6 +53,7 @@ export default class World {
             inputs: this.inputs,
             x: World.GAMEPLAY_WIDTH / 2
         });
+        this.gameDetails.numBlocks = 0;
 
     }
 
@@ -83,13 +84,13 @@ export default class World {
     reset() {
         this.entities = [];
 
-        this.rows = new RowManager();
+        this.rows = new RowManager(this.gameDetails);
         for (const row of this.rows.rows) {
             this.entities.push(...row.entities);
         }
 
         this.player.reset(World.GAMEPLAY_WIDTH / 2);
-        
+        this.gameDetails.numBlocks = 0;
     }
 
     update(dt: number): void {
@@ -123,6 +124,7 @@ export default class World {
     }
 
     updateStarting(dt: number): void {
+        this.gameDetails.currentScore = 0;
         this.player.update(dt);
         if (this.player.spawnScale >= 1) {
             this.startRun();

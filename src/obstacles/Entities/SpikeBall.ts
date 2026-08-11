@@ -28,6 +28,9 @@ export class SpikeBall extends Entity {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 2;
+        ctx.stroke();
     }
 }
 
@@ -50,11 +53,11 @@ export class HorizontalMoveSpikeBall extends SpikeBall {
 
     override update(dt: number) {
         // if reaches end of screen, reverse direction
-        if (this.x + this.radius >= this.rightEnd) {
+        if (this.x >= this.rightEnd) {
             this.direction = -1;
         }
 
-        if (this.x - this.radius <= this.leftEnd) {
+        if (this.x <= this.leftEnd) {
             this.direction = 1;
         }
 
@@ -93,6 +96,9 @@ export class PivotSpikeBall extends SpikeBall {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 2;
+        ctx.stroke();
         
         // pivot point
         ctx.fillStyle = "#333333";

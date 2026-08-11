@@ -134,6 +134,30 @@ export const sprites = {
         32, 32
     ),
 
+    spikeLone: new Sprite(
+        Assets.dirtCave,
+        192, 64,
+        32, 32
+    ),
+
+    spikeLeft: new Sprite(
+        Assets.dirtCave,
+        160, 32,
+        32, 32
+    ),
+
+    spikeMiddle: new Sprite(
+        Assets.dirtCave,
+        192, 32,
+        32, 32
+    ),
+
+    spikeRight: new Sprite(
+        Assets.dirtCave,
+        224, 32,
+        32, 32
+    ),
+
     playerFall1: new Sprite(
         Assets.playerSprite,
         0, 0,

@@ -24,6 +24,11 @@ interface ZigzagRowBlockOptions {
 
     swingMin?: number;
     swingMax?: number;
+
+    booster?: boolean;
+    boosterMod?: number;
+    boosterImpulse?: number;
+    boosterMultiplier?: number;
 }
 
 export default class ZigzagRowBlock extends RowBlock {
@@ -48,7 +53,13 @@ export default class ZigzagRowBlock extends RowBlock {
             gapWidthMax = 4,
 
             swingMin = 4,
-            swingMax = Row.WIDTH - 1
+            swingMax = Row.WIDTH - 1,
+
+            booster = false,
+            boosterMod = 6,
+            boosterImpulse = 450,
+            boosterMultiplier = 1.5
+            
         } = options;
 
         const segmentCount = resolve(segments, segmentsMin, segmentsMax);
@@ -78,7 +89,11 @@ export default class ZigzagRowBlock extends RowBlock {
                 pathStart: currentStart,
                 pathEnd: target,
                 leadIn: 0,
-                leadOut: 0
+                leadOut: 0,
+                booster: booster,
+                boosterMod: boosterMod,
+                boosterImpulse: boosterImpulse,
+                boosterMultiplier: boosterMultiplier
             });
 
             rows.push(...segmentRows);
